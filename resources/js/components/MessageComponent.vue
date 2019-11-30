@@ -2,6 +2,9 @@
     <div class="card chat-box">
         <div class="card-header">
             Chats
+            <a href="" @click.prevent="close">
+                <i class="fa fa-times float-right" aria-hidden="true"></i>
+            </a>
         </div>
         <div class="card-body" v-chat-scroll>
            <p class="card-text" v-for="chat in chats" :key="chat.message">
@@ -23,12 +26,15 @@
     export default {
         data() {
             return {
-                chats: []
+                chats: [],
             }
         },
         methods: {
             send() {
                 console.log('awd')
+            },
+            close() {
+                this.$emit('close');
             }
         },
         created() {
