@@ -51,6 +51,15 @@
                         })
                     })
                 })
+                .joining((user) => {
+                    this.friends.forEach(friend => user.id === friend.id ? friend.online = true : '');
+                    console.log(user.name)
+                })
+                .leaving((user) => {
+                    this.friends.forEach(friend => user.id === friend.id ? friend.online = false : '');
+                    console.log(user.name)
+                })
+
         },
         methods: {
         close(friend) {
