@@ -2,7 +2,7 @@
     <div class="card chat-box">
         <div class="card-header">
             <b :class="{'text-danger':session_block}">
-                User Name
+                {{friend.name}}
                 <span v-if="session_block">(blocked)</span>
             </b>
             <a href="" @click.prevent="close">
@@ -41,6 +41,7 @@
 
 <script>
     export default {
+        props: ['friend'],
         data() {
             return {
                 chats: [],
@@ -72,9 +73,9 @@
                 {message: 'How are you4?'},
                 {message: 'How are you5?'},
                 {message: 'How are you6?'},
-           )
+            )
         }
-    }
+    };
 </script>
 
 <style>
