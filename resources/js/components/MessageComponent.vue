@@ -5,6 +5,20 @@
             <a href="" @click.prevent="close">
                 <i class="fa fa-times float-right" aria-hidden="true"></i>
             </a>
+
+            Chats
+
+            <div class="dropdown show float-right">
+                <a href="#"   data-toggle="dropdown"   aria-expanded="false">
+                    <i class="fa fa-ellipsis-v float-right mr-4"></i>
+                </a>
+
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Block</a>
+                    <a class="dropdown-item" href="#" @click.prevent="clear">Clear chat</a>
+                 </div>
+            </div>
+
         </div>
         <div class="card-body" v-chat-scroll>
            <p class="card-text" v-for="chat in chats" :key="chat.message">
@@ -35,6 +49,9 @@
             },
             close() {
                 this.$emit('close');
+            },
+            clear() {
+                this.chats = [];
             }
         },
         created() {
