@@ -40,9 +40,17 @@
          MessageComponent
         },
         created() {
-
             this.getFriends();
-
+            Echo.join('Chat')
+                .here((users) => {
+                    this.friends.forEach(friend => {
+                        users.forEach(onlineUser => {
+                            if (onlineUser.id === friend.id) {
+                                friend.online = true;
+                            }
+                        })
+                    })
+                })
         },
         methods: {
         close(friend) {
