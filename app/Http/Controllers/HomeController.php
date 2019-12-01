@@ -28,8 +28,8 @@ class HomeController extends Controller
         return view('home');
     }
 
-    public function getFriend()
+    public function getFriends()
     {
-        return UserResource::collection(User::all());
+        return UserResource::collection(User::where('id','!=', auth()->id())->get());
     }
 }
