@@ -84,6 +84,7 @@
                     friend.session ? friend.session.open = false : '';
                 });
                friend.session.open = true;
+               friend.session.unreadCount = 0;
             } else {
                 this.friends.forEach(friend => {
                     if (friend.session) {
