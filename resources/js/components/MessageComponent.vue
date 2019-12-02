@@ -59,7 +59,8 @@
                     console.log(this.message)
                     this.chats.push(this.message);
                     axios.post(`/send/${this.friend.session.id}`, {
-                        message: this.message
+                        message: this.message,
+                        to_user: this.friend.id
                     });
                     this.message = null;
                 }
