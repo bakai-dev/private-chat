@@ -55,8 +55,11 @@
         created() {
             this.getAllMessages();
 
+            this.read();
+
             Echo.private(`Chat.${this.friend.session.id}`)
                 .listen('PrivateChatEvent', (res) => {
+                    this.read();
                     this.chats.push({ message: res.content, type: 1, sent_at: "Just Now" });
                 });
         },
@@ -94,6 +97,10 @@
             UnBlock() {
                 this.session_block = false;
             },
+
+            read() {
+                axios.post(`/session/${this.friend.session.id}/read`);
+            }
 
         },
 
