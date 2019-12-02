@@ -78,9 +78,7 @@
         openChat(friend) {
             if (friend.session) {
                 this.friends.forEach(friend => {
-                    if (friend.session) {
-                        friend.session.open = false;
-                    }
+                    friend.session ? friend.session.open = false : '';
                 });
                friend.session.open = true;
             } else {
