@@ -17,6 +17,6 @@ class SessionController extends Controller
 
         broadcast(new SessionEvent($modifySession, auth()->id()));
 
-        return new $modifySession;
+        return  $modifySession;
     }
 }
