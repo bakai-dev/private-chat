@@ -27,11 +27,14 @@
                {{chat.message}}
            </p>
         </div>
-        <form class="card-footer" @submit="send">
+        <form   class="card-footer" @submit.prevent="send">
             <div class="form-group">
                 <input type="text"  class="form-control" placeholder="Write your message here"
-                :disabled="session_block">
+                :disabled="session_block"
+                v-model="message"
+                >
             </div>
+            <button type="submit" class="btn btn-info">Send</button>
         </form>
     </div>
 
@@ -45,12 +48,21 @@
         data() {
             return {
                 chats: [],
+                message: null,
                 session_block: false
             }
         },
         methods: {
             send() {
-                console.log('awd')
+
+                if (this.message) {
+                    console.log(this.message)
+                    this.chats.push(this.message);
+                    axios.post(`/send/${this.friend.session.id}`, {
+                        message: this.message
+                    });
+                    this.message = null;
+                }
             },
             close() {
                 this.$emit('close');
