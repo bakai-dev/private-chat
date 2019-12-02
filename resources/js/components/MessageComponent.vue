@@ -52,11 +52,20 @@
                 session_block: false
             }
         },
-        methods: {
-            send() {
+        created() {
+            this.getAllMessages();
+        },
 
+        methods: {
+            getAllMessages() {
+                axios
+                    .post(`/session/${this.friend.session.id}/chats`)
+                    .then(res => (this.chats = res.data.data));
+            },
+
+            send() {
                 if (this.message) {
-                    this.pushToChast(this.message);
+                    this.pushToChats(this.message);
                     axios.post(`/send/${this.friend.session.id}`, {
                         message: this.message,
                         to_user: this.friend.id
@@ -64,8 +73,9 @@
                     this.message = null;
                 }
             },
-            pushToChast(message) {
-                this.chats.push({message: message});
+
+            pushToChats(message) {
+                this.chats.push({ message: message, type: 0, sent_at: "Just Now" });
             },
             close() {
                 this.$emit('close');
@@ -78,18 +88,10 @@
             },
             UnBlock() {
                 this.session_block = false;
-            }
+            },
+
         },
-        created() {
-            this.chats.push({message: 'Hello'},
-                {message: 'How are you1?'},
-                {message: 'How are you2?'},
-                {message: 'How are you3?'},
-                {message: 'How are you4?'},
-                {message: 'How are you5?'},
-                {message: 'How are you6?'},
-            )
-        }
+
     };
 </script>
 
