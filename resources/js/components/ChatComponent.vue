@@ -80,9 +80,7 @@
                 this.friends = res.data.data;
                 this.friends.forEach(friend => {
                     if (friend.session) {
-                        Echo.private(`Chat.${friend.session.id}`).listen('PrivateChatEvent', e => {
-                            friend.session.unreadCount++
-                        });
+                        this.listenForEverySession(friend)
                     }
                 });
             });
@@ -108,7 +106,15 @@
 
                 (friend.session = res.data.data), (friend.session.open = true);
             });
-        }
+        },
+            listenForEverySession(friend) {
+                Echo.private(`Chat.${friend.session.id}`).listen('PrivateChatEvent', e => {
+                    console.log(friend.session.open)
+                    if (!friend.session.open) {
+                        friend.session.unreadCount++;
+                    }
+                });
+            }
         }
     }
 </script>
