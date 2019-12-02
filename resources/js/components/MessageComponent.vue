@@ -23,7 +23,7 @@
 
         </div>
         <div class="card-body" v-chat-scroll>
-           <p class="card-text" :class="{'text-right': chat.type == 0 }" v-for="chat in chats" :key="chat.message">
+           <p class="card-text" :class="{'text-right': chat.type == 0 }" v-for="chat in chats" :key="chat.id">
                {{chat.message}}
            </p>
         </div>
