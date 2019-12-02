@@ -8,7 +8,10 @@
                     </div>
                         <ul class="list-group">
                                 <li class="list-group-item"  @click.prevent="openChat(friend)"  v-for="friend in friends" :key="friend.id">
-                                    <a href="">{{friend.name}}</a>
+                                    <a href="">
+                                        {{friend.name}}
+                                        <span class="text-danger" v-if="friend.session && friend.session.unreadCount > 0">{{friend.session.unreadCount}}</span>
+                                    </a>
                                     <i  class="fa fa-circle float-right text-success" v-if="friend.online" ></i>
                                 </li>
                         </ul>
