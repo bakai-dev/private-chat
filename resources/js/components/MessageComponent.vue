@@ -56,14 +56,16 @@
             send() {
 
                 if (this.message) {
-                    console.log(this.message)
-                    this.chats.push(this.message);
+                    this.pushToChast(this.message);
                     axios.post(`/send/${this.friend.session.id}`, {
                         message: this.message,
                         to_user: this.friend.id
                     });
                     this.message = null;
                 }
+            },
+            pushToChast(message) {
+                this.chats.push({message: message});
             },
             close() {
                 this.$emit('close');
