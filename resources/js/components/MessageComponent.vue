@@ -1,25 +1,29 @@
 <template>
     <div class="card chat-box">
         <div class="card-header">
-            <b :class="{'text-danger':session_block}">
+            <b :class="{'text-danger':session.block}">
                 {{friend.name}}
-                <span v-if="session_block">(blocked)</span>
+                <span v-if="session.block">(blocked)</span>
             </b>
             <a href="" @click.prevent="close">
                 <i class="fa fa-times float-right" aria-hidden="true"></i>
             </a>
 
-            <div class="dropdown show float-right">
-                <a href="#"   data-toggle="dropdown"   aria-expanded="false">
-                    <i class="fa fa-ellipsis-v float-right mr-4"></i>
+            <!-- Options -->
+            <div class="dropdown float-right mr-4">
+                <a href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                 </a>
 
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#" v-if="session_block" @click.prevent="UnBlock">UnBlock</a>
-                    <a class="dropdown-item" href="#" v-else @click.prevent="block">Block</a>
-                    <a class="dropdown-item" href="#" @click.prevent="clear">Clear chat</a>
-                 </div>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#" v-if="session.block && can" @click.prevent="unblock">UnBlock</a>
+                    <a class="dropdown-item" href="#" @click.prevent="block" v-if="!session.block">Block</a>
+
+                    <a class="dropdown-item" href="#" @click.prevent="clear"> Clear Chat</a>
+                </div>
+
             </div>
+            <!-- Options Ends -->
 
         </div>
         <div class="card-body" v-chat-scroll>
@@ -32,7 +36,7 @@
         <form   class="card-footer" @submit.prevent="send">
             <div class="form-group">
                 <input type="text"  class="form-control" placeholder="Write your message here"
-                :disabled="session_block"
+                :disabled="session.block"
                 v-model="message"
                 >
             </div>
@@ -51,7 +55,15 @@
             return {
                 chats: [],
                 message: null,
-                session_block: false
+                authId: authId
+            }
+        },
+        computed: {
+            session() {
+                return this.friend.session;
+            },
+            can() {
+                return this.session.blocked_by == authId;
             }
         },
         created() {
@@ -70,6 +82,10 @@
                 this.chats.forEach(
                     chat => (chat.id == e.chat.id ? (chat.read_at = e.chat.read_at) : "")
                 )
+            );
+
+            Echo.private(`Chat.${this.friend.session.id}`).listen("BlockEvent", e =>
+                this.session.block = e.blocked
             );
         },
 
@@ -108,10 +124,18 @@
                 })
             },
             block() {
-                this.session_block = true;
+                this.session.block = true;
+                axios
+                    .post(`/session/${this.friend.session.id}/block`)
+                    .then(res => (this.session.blocked_by = authId));
             },
-            UnBlock() {
-                this.session_block = false;
+            unblock() {
+                this.session.block = false;
+                axios.post(`session/${this.friend.session.id}/unblock`).then(
+                    res => {
+                        this.session.blocked_by = null;
+                    }
+                );
             },
 
             read() {
