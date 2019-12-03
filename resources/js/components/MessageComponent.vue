@@ -23,9 +23,11 @@
 
         </div>
         <div class="card-body" v-chat-scroll>
-           <p class="card-text" :class="{'text-right': chat.type == 0 }" v-for="chat in chats" :key="chat.id">
-               {{chat.message}}
-           </p>
+            <p class="card-text" :class="{'text-right':chat.type == 0,'text-success':chat.read_at!=null}" v-for="chat in chats" :key="chat.id">
+                {{chat.message}}
+                <br>
+                <span style="font-size:8px">{{chat.read_at}}</span>
+            </p>
         </div>
         <form   class="card-footer" @submit.prevent="send">
             <div class="form-group">
@@ -59,8 +61,13 @@
 
             Echo.private(`Chat.${this.friend.session.id}`)
                 .listen('PrivateChatEvent', (res) => {
-                    this.read();
+                    this.friend.session.open ? this.read() : '';
                     this.chats.push({ message: res.content, type: 1, sent_at: "Just Now" });
+                });
+
+            Echo.private(`Chat.${this.friend.session.id}`)
+                .listen('MsqReadEvent', (res) => {
+                    this.chats.forEach(chat => chat.id == e.chat.id ? chat.read_at = e.chat.read_at : '');
                 });
         },
 
@@ -77,8 +84,13 @@
                     axios.post(`/send/${this.friend.session.id}`, {
                         message: this.message,
                         to_user: this.friend.id
-                    });
+                    }).then(
+                        res => {
+                            this.chats[this.chats.length -1].id = res.data
+                        }
+                    );
                     this.message = null;
+                   // this.read()
                 }
             },
 
