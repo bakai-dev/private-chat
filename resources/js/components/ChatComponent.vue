@@ -64,11 +64,9 @@
                 })
                 .joining((user) => {
                     this.friends.forEach(friend => user.id === friend.id ? friend.online = true : '');
-                    console.log(user.name)
                 })
                 .leaving((user) => {
                     this.friends.forEach(friend => user.id === friend.id ? friend.online = false : '');
-                    console.log(user.name)
                 })
 
         },
@@ -110,7 +108,6 @@
         },
             listenForEverySession(friend) {
                 Echo.private(`Chat.${friend.session.id}`).listen('PrivateChatEvent', e => {
-                    console.log(friend.session.open)
                     if (!friend.session.open) {
                         friend.session.unreadCount++;
                     }

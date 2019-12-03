@@ -2,7 +2,7 @@
     <div class="card chat-box">
         <div class="card-header">
             <b :class="{'text-danger':session.block}">
-                {{friend.name}}
+                {{friend.name}} <span v-if="isTyping">is Typing</span>
                 <span v-if="session.block">(blocked)</span>
             </b>
             <a href="" @click.prevent="close">
@@ -55,7 +55,16 @@
             return {
                 chats: [],
                 message: null,
-                authId: authId
+                isTyping: false
+            }
+        },
+        watch: {
+            message(value) {
+                if (value) {
+                    Echo.private(`Chat.${this.friend.session.id}`).whisper("typing", {
+                        name: auth.name
+                    });
+                }
             }
         },
         computed: {
@@ -63,7 +72,7 @@
                 return this.friend.session;
             },
             can() {
-                return this.session.blocked_by == authId;
+                return this.session.blocked_by == auth.id;
             }
         },
         created() {
@@ -86,6 +95,16 @@
 
             Echo.private(`Chat.${this.friend.session.id}`).listen("BlockEvent", e =>
                 this.session.block = e.blocked
+            );
+
+            Echo.private(`Chat.${this.friend.session.id}`).listenForWhisper(
+                "typing",
+                e => {
+                    this.isTyping = true;
+                    setTimeout(() => {
+                        this.isTyping = false;
+                    }, 2000);
+                }
             );
         },
 
@@ -127,7 +146,7 @@
                 this.session.block = true;
                 axios
                     .post(`/session/${this.friend.session.id}/block`)
-                    .then(res => (this.session.blocked_by = authId));
+                    .then(res => (this.session.blocked_by = auth.id));
             },
             unblock() {
                 this.session.block = false;
