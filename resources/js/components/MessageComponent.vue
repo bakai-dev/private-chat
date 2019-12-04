@@ -2,8 +2,8 @@
     <div class="card chat-box">
         <div class="card-header">
             <b :class="{'text-danger':session.block}">
-                {{friend.name}} <span v-if="isTyping">is Typing</span>
-                <span v-if="session.block">(blocked)</span>
+                {{friend.name}} <span v-if="isTyping" style="color: #00b0ff !important;">s Typing</span>
+                <span  v-if="session.block">(blocked)</span>
             </b>
             <a href="" @click.prevent="close">
                 <i class="fa fa-times float-right" aria-hidden="true"></i>

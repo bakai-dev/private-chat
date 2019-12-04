@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
-    <title>Private Chat Laravel Vue Sign in</title>
+    <title>Private Chat Laravel Vue Sign Up</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"><link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
 
     <style>
@@ -55,12 +55,12 @@
 
         .demo {
             position: absolute;
-            top: 45%;
+            top: 30%;
             left: 50%;
             margin-left: -15rem;
             margin-top: -26.5rem;
             width: 30rem;
-            height: 60rem;
+            height: 40rem;
             overflow: hidden;
         }
 
@@ -515,14 +515,7 @@
 <body>
 <!-- partial:index.partial.html -->
 <div class="cont">
-    <div  style="text-align: left">
 
-        <p class="login__signup">TEST LOGIN 1: <a>test@gmail.com</a></p>
-        <p class="login__signup">PASSWORD 1:  &nbsp;<a>test@gmail.com</a></p>
-        <br>
-        <p class="login__signup">TEST LOGIN 2: <a>test2@gmail.com</a></p>
-        <p class="login__signup">PASSWORD 2:  &nbsp;<a>test2@gmail.com</a></p>
-    </div>
     <div class="demo">
 
 
@@ -530,7 +523,7 @@
 
             <div class="login__check"></div>
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST"  action="{{ route('register') }}">
 
                 @csrf
                 <div class="login__form">
@@ -541,18 +534,31 @@
                         <svg class="login__icon name svg-icon" viewBox="0 0 20 20">
                             <path d="M0,20 a10,8 0 0,1 20,0z M10,0 a4,4 0 0,1 0,8 a4,4 0 0,1 0,-8" />
                         </svg>
-                        <input type="text"  name="email" class="login__input name"  placeholder="Username" value="test@gmail.com"/>
+                        <input type="text"  name="name" class="login__input name"  placeholder="Username"/>
+                        @error('name')
+                        <span class="invalid-feedback login__signup" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                        @enderror
+                    </div>
+
+                    <div class="login__row">
+                        <svg class="login__icon name svg-icon" viewBox="0 0 20 20">
+                            <path d="M0,20 a10,8 0 0,1 20,0z M10,0 a4,4 0 0,1 0,8 a4,4 0 0,1 0,-8" />
+                        </svg>
+                        <input type="text"  name="email" class="login__input name"  placeholder="Email"/>
                         @error('email')
                         <span class="invalid-feedback login__signup" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                         @enderror
                     </div>
+
                     <div class="login__row">
                         <svg class="login__icon pass svg-icon" viewBox="0 0 20 20">
                             <path d="M0,20 20,20 20,8 0,8z M10,13 10,16z M4,8 a6,8 0 0,1 12,0" />
                         </svg>
-                        <input type="password" name="password" class="login__input pass" placeholder="Password" value="test@gmail.com"/>
+                        <input type="password" name="password" class="login__input pass" placeholder="Password"  />
                         @error('password')
                         <span class="invalid-feedback login__signup" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -560,24 +566,22 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="login__submit ">Sign in</button>
-                    <p  class="login__signup">Don't have an account? &nbsp;<a href="{{ route('register') }}">Sign up</a></p>
+                    <div class="login__row">
+                        <svg class="login__icon pass svg-icon" viewBox="0 0 20 20">
+                            <path d="M0,20 20,20 20,8 0,8z M10,13 10,16z M4,8 a6,8 0 0,1 12,0" />
+                        </svg>
+                        <input type="password" name="password_confirmation" class="login__input pass" placeholder="Password confirmation" />
+
+                    </div>
+
+                    <button type="submit" class="login__submit ">Sign Up</button>
+                    <p  class="login__signup">Got to login page &nbsp;<a href="{{ route('index') }}">Sign In</a></p>
                 </div>
             </form>
 
         </div>
 
-        <div class="app">
-            <div class="app__top">
 
-            </div>
-
-            <div class="app__logout">
-                <svg class="app__logout-icon svg-icon" viewBox="0 0 20 20">
-                    <path d="M6,3 a8,8 0 1,0 8,0 M10,0 10,12"/>
-                </svg>
-            </div>
-        </div>
 
 
     </div>

@@ -6,6 +6,7 @@
 
 require('./bootstrap');
 
+
 window.Vue = require('vue');
 Vue.use(require('vue-chat-scroll'));
 /**
@@ -20,6 +21,7 @@ Vue.use(require('vue-chat-scroll'));
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('chat-component', require('./components/ChatComponent.vue').default);
+Vue.component('private-chat-component', require('./components/PrivateChatComponent').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

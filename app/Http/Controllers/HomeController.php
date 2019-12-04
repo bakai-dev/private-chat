@@ -28,6 +28,12 @@ class HomeController extends Controller
         return view('home');
     }
 
+
+    public function chat()
+    {
+        return view('chat');
+    }
+
     public function getFriends()
     {
         return UserResource::collection(User::where('id','!=', auth()->id())->get());
