@@ -5,7 +5,7 @@
                 <div class="top">
 
 
-                    <img style="height: 46px;     float: left;" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/thomas.jpg" alt="" />
+                    <img style="height: 46px;     float: left;" :src="auth.image" alt="" />
 
                         <span class="dropdown search" style="float: left; margin-right: 10px;top: 13px;left: 20px" aria-hidden="true">
 
@@ -28,7 +28,7 @@
                 </div>
                 <ul class="people">
                     <li class="person"    @click.prevent="openChat(friend)"  v-for="friend in friends" :key="friend.id">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/thomas.jpg" alt="" />
+                        <img :src="friend.image" alt="" />
                         <span class="name"> {{friend.name}}</span>
                         <span class="time search" style="  padding: 5px; background: #00b0ff; border: 2px solid #00b0ff; color: #effbff; text-align: center;font-size: 16px" v-if="friend.session && friend.session.unreadCount > 0">{{friend.session.unreadCount}}</span>
 
@@ -55,101 +55,80 @@
 </template>
 
 <script>
-    import PrivateMessageComponent from './PrivateMessageComponent'
-
+    import PrivateMessageComponent from "./PrivateMessageComponent";
     export default {
-        data: function data() {
+        data() {
             return {
                 friends: [],
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 auth: window.auth
             };
         },
-        components: {
-            PrivateMessageComponent,
-        },
-        mounted() {
-
+        methods: {
+            close(friend) {
+                friend.session.open = false;
+            },
+            getFriends() {
+                axios.post("/getFriends").then(res => {
+                    this.friends = res.data.data;
+                    this.friends.forEach(
+                        friend => (friend.session ? this.listenForEverySession(friend) : "")
+                    );
+                });
+            },
+            openChat(friend) {
+                if (friend.session) {
+                    this.friends.forEach(
+                        friend => (friend.session ? (friend.session.open = false) : "")
+                    );
+                    friend.session.open = true;
+                    friend.session.unreadCount = 0;
+                } else {
+                    this.createSession(friend);
+                }
+            },
+            createSession(friend) {
+                axios.post("/session/create", { friend_id: friend.id }).then(res => {
+                    (friend.session = res.data.data), (friend.session.open = true);
+                });
+            },
+            listenForEverySession(friend) {
+                Echo.private(`Chat.${friend.session.id}`).listen(
+                    "PrivateChatEvent",
+                    e => (friend.session.open ? "" : friend.session.unreadCount++)
+                );
+            }
         },
         created() {
             this.getFriends();
 
-            Echo.channel('Chat').listen('SessionEvent', e => {
-                let friend = this.friends.find(friend => friend.id === e.session_by);
+            Echo.channel("Chat").listen("SessionEvent", e => {
+                let friend = this.friends.find(friend => friend.id == e.session_by);
                 friend.session = e.session;
-                this.listenForEverySession(friend)
+                this.listenForEverySession(friend);
             });
 
-            Echo.join('Chat')
-                .here((users) => {
+            Echo.join(`Chat`)
+                .here(users => {
                     this.friends.forEach(friend => {
-                        users.forEach(onlineUser => {
-                            if (onlineUser.id === friend.id) {
+                        users.forEach(user => {
+                            if (user.id == friend.id) {
                                 friend.online = true;
                             }
-                        })
-                    })
+                        });
+                    });
                 })
-                .joining((user) => {
-                    this.friends.forEach(friend => user.id === friend.id ? friend.online = true : '');
+                .joining(user => {
+                    this.friends.forEach(
+                        friend => (user.id == friend.id ? (friend.online = true) : "")
+                    );
                 })
-                .leaving((user) => {
-                    this.friends.forEach(friend => user.id === friend.id ? friend.online = false : '');
-                })
-
-
-
-
-        },
-
-        methods: {
-            submit(){
-                this.$refs.form.submit();
-            },
-
-        close(friend) {
-            friend.session.open = false;
-        },
-        getFriends() {
-            axios.post("/getFriends").then(res => {
-                this.friends = res.data.data;
-                this.friends.forEach(friend => {
-                    if (friend.session) {
-                        this.listenForEverySession(friend)
-                    }
+                .leaving(user => {
+                    this.friends.forEach(
+                        friend => (user.id == friend.id ? (friend.online = false) : "")
+                    );
                 });
-            });
         },
-        openChat(friend) {
-            if (friend.session) {
-                this.friends.forEach(friend => {
-                    friend.session ? friend.session.open = false : '';
-                });
-               friend.session.open = true;
-               friend.session.unreadCount = 0;
-            } else {
-                this.friends.forEach(friend => {
-                    if (friend.session) {
-                        friend.session.open = false;
-                    }
-                });
-                this.createSession(friend);
-            }
-        },
-        createSession(friend) {
-            axios.post("/session/create", { friend_id: friend.id }).then(res => {
-
-                (friend.session = res.data.data), (friend.session.open = true);
-            });
-        },
-            listenForEverySession(friend) {
-                Echo.private(`Chat.${friend.session.id}`).listen('PrivateChatEvent', e => {
-                    if (!friend.session.open) {
-                        friend.session.unreadCount++;
-                    }
-                });
-            }
-        }
-    }
+        components: { PrivateMessageComponent }
+    };
 </script>
-

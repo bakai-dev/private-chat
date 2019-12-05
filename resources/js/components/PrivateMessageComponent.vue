@@ -26,28 +26,37 @@
         <div class="chat" style="max-height: 460px; overflow-y: scroll;" v-chat-scroll  >
 
 
-                <div class="card-text"   v-for="chat in chats" :key="chat.id">
+            <div   class="card-text" v-chat-scroll>
+                <p  :class="{'bubble you':chat.type === 0,'bubble me':chat.type === 1}" v-for="chat in chats" :key="chat.id">
+                    {{chat.message}}
+                    <br>
+                    <span style="font-size:10px">send {{chat.send_at}}</span>
+
+                    <br>
+                    <i v-if="chat.read_at!=null" class="fa fa-check" style=" color: #fff9fe" aria-hidden="true">
+                        <span style="font-size:10px">read {{chat.read_at}}</span>
+                    </i>
+
+                </p>
+            </div>
+
+   <!--             <div class="card-text"   v-for="chat in chats" :key="chat.id">
 
                     <div class="bubble you" v-if="chat.type === 1">
                         {{chat.message}}
                         <i v-if="chat.read_at!=null" class="fa fa-check" style=" color: #fff9fe" aria-hidden="true">
                         </i>
-                        <span  v-if="chat.read_at" style="font-size:9px">{{chat.read_at}}</span>
-                        <span v-else style="font-size:9px">{{chat.sent_at}}</span>
+
+                        <span v-if="chat.sent_at" style="font-size:9px">{{chat.read_at}}</span>
                     </div>
                     <div class="bubble me" v-else>
                         {{chat.message}}
                         <i v-if="chat.read_at!=null" class="fa fa-check" style=" color: #00b0ff" aria-hidden="true">
                         </i>
                         <span v-if="chat.read_at" style="font-size:9px">{{chat.read_at}}</span>
-                        <span v-else  style="font-size:9px">{{chat.sent_at}}</span>
+
                     </div>
-
-
-
-
-
-                </div>
+                </div>-->
         </div>
         <div class="write">
             <form   class="card-footer"  @submit.prevent="send">
@@ -92,26 +101,33 @@
         },
 
         created() {
+            this.read();
+
             this.getAllMessages();
 
-            this.read();
+
 
             Echo.private(`Chat.${this.friend.session.id}`).listen(
                 "PrivateChatEvent",
                 e => {
                     this.friend.session.open ? this.read() : "";
-                    this.chats.push({ message: e.content, type: 0, sent_at: "Just Now" });
+                    this.chats.push({ message: e.content, type: 1, send_at: "Just Now" });
                 }
             );
+
+
             Echo.private(`Chat.${this.friend.session.id}`).listen("MsgReadEvent", e =>
                 this.chats.forEach(
                     chat => (chat.id == e.chat.id ? (chat.read_at = e.chat.read_at) : "")
                 )
             );
 
-            Echo.private(`Chat.${this.friend.session.id}`).listen("BlockEvent", e =>
-                this.session.block = e.blocked
+
+            Echo.private(`Chat.${this.friend.session.id}`).listen(
+                "BlockEvent",
+                e => (this.session.block = e.blocked)
             );
+
 
             Echo.private(`Chat.${this.friend.session.id}`).listenForWhisper(
                 "typing",
@@ -130,25 +146,26 @@
                     .post(`/session/${this.friend.session.id}/chats`)
                     .then(res => (this.chats = res.data.data));
             },
-
             send() {
                 if (this.message) {
                     this.pushToChats(this.message);
-                    axios.post(`/send/${this.friend.session.id}`, {
-                        message: this.message,
-                        to_user: this.friend.id,
-                    }).then(
-                        res => {
-                            this.chats[this.chats.length -1].id = res.data
-                        }
-                    );
+                    axios
+                        .post(`/send/${this.friend.session.id}`, {
+                            message: this.message,
+                            to_user: this.friend.id
+                        })
+                        .then(res => (this.chats[this.chats.length - 1].id = res.data));
                     this.message = null;
-                   // this.read()
                 }
             },
-
             pushToChats(message) {
-                this.chats.push({ message: message, type: 1, read_at: null, sent_at: "Just Now" });
+                this.chats.push({
+                    message: message,
+                    type: 0,
+                    read_at: null,
+                    send_at: "Just now"
+                });
+
             },
             close() {
                 this.$emit('close');

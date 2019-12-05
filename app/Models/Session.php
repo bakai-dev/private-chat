@@ -4,6 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Session
+ * @package App\Models
+ *
+ * @property boolean block
+ */
 class Session extends Model
 {
 
@@ -29,16 +35,17 @@ class Session extends Model
         $this->messages()->delete();
     }
 
+
     public function block()
     {
-        $this->block = true;
+        $this->is_block = true;
         $this->blocked_by = auth()->id();
         $this->save();
     }
 
     public function unblock()
     {
-        $this->block = false;
+        $this->is_block = false;
         $this->blocked_by = null;
         $this->save();
     }

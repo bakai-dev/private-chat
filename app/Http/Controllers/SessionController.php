@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\SessionEvent;
-use App\Http\Resources\SessionResource;
-use App\Models\Session;
 use Illuminate\Http\Request;
+use App\Models\Session;
+use App\Http\Resources\SessionResource;
+use App\Events\SessionEvent;
 
 class SessionController extends Controller
 {
@@ -13,10 +13,10 @@ class SessionController extends Controller
     {
         $session = Session::create(['user1_id' => auth()->id(), 'user2_id' => $request->friend_id]);
 
-        $modifySession = new SessionResource($session);
+        $modifiedSession = new SessionResource($session);
 
-        broadcast(new SessionEvent($modifySession, auth()->id()));
+        broadcast(new SessionEvent($modifiedSession, auth()->id()));
 
-        return  $modifySession;
+        return $modifiedSession;
     }
 }

@@ -20,7 +20,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'online' => false,
-            'session' => $this->session_details($this->id)
+            'session' => $this->session_details($this->id),
+            'image' => $this->image,
         ];
     }
     private function session_details($id)
