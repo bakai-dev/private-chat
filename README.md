@@ -3,7 +3,7 @@
 > Private (one to one) realtime Chat App with Laravel 6.2 and Vue.
 
 ###  [Demo](http://laravel-vue-chat.herokuapp.com) 
->  http://laravel-vue-chat.herokuapp.com`
+>  http://laravel-vue-chat.herokuapp.com
 
 
 <p align="center">
